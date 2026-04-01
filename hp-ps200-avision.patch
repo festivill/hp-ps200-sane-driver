@@ -1,0 +1,19 @@
+--- /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2023-02-05 00:01:14.000000000 -0300
++++ /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
+@@ -896,6 +896,16 @@
+     /* status="good" */
+ 
+ #endif
++
++    { "HP", "HP PS200",
++      0x03f0, 0x53f3,
++      "Hewlett-Packard", "HP PS200 Sheet-fed Scanner",
++      AV_INT_BUTTON | AV_ACCEL_TABLE,
++      { 0, {0, 0}, {{0, 0}, {0, 0}} }
++    },
++    /* comment="HP PS200 portable sheet-fed scanner (Avision OEM)" */
++    /* status="basic" */
++
+     { "Minolta", "#2882",
+       0, 0,
+       "Minolta", "Dimage Scan Dual I",
