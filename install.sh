@@ -65,6 +65,7 @@ ldconfig
 # Configure SANE
 echo "[6/7] Configuring SANE..."
 if ! grep -q "0x03f0 0x53f3" /etc/sane.d/avision.conf 2>/dev/null; then
+    echo "option force-a4" >> /etc/sane.d/avision.conf
     echo "usb 0x03f0 0x53f3" >> /etc/sane.d/avision.conf
 fi
 

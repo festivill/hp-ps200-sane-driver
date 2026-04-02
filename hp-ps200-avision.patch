@@ -1,19 +1,65 @@
---- /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2023-02-05 00:01:14.000000000 -0300
-+++ /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-@@ -896,6 +896,16 @@
-     /* status="good" */
+--- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 20:54:32.870266470 -0300
+@@ -900,7 +900,7 @@
+     { "HP", "HP PS200",
+       0x03f0, 0x53f3,
+       "Hewlett-Packard", "HP PS200 Sheet-fed Scanner",
+-      AV_INT_BUTTON | AV_ACCEL_TABLE,
++      AV_INT_BUTTON | AV_GAMMA_10,
+       { 0, {0, 0}, {{0, 0}, {0, 0}} }
+     },
+     /* comment="HP PS200 portable sheet-fed scanner (Avision OEM)" */
+@@ -2547,8 +2547,8 @@
+ 	status_timeout = 1000;
+         break;
+       case AVISION_SCSI_TEST_UNIT_READY:
+-        read_timeout = 15000; /* quickly timeout on initial detection */
+-	status_timeout = 15000;
++        read_timeout = 2000; /* short timeout - some scanners don't support TUR */
++	status_timeout = 2000;
+         break;
+     }
  
- #endif
+@@ -3309,6 +3309,10 @@
+       DBG (3, "wait_ready: sending TEST_UNIT_READY\n");
+       status = avision_cmd (av_con, test_unit_ready, sizeof (test_unit_ready),
+ 			    0, 0, 0, 0);
++      if (status != SANE_STATUS_GOOD && status != SANE_STATUS_DEVICE_BUSY) {
++        DBG (1, "wait_ready: device returned %s, assuming ready\n", sane_strstatus(status));
++        return SANE_STATUS_GOOD;
++      }
+       sleep ((unsigned int) delay);
+ 
+       switch (status)
+@@ -4892,6 +4896,19 @@
+       } /* end for all modes */
+   }
+ 
++  /* HP PS200: scanner misreports type and capabilities in inquiry */
++  if (Avision_Device_List[model_num].usb_vendor == 0x03f0 &&
++      Avision_Device_List[model_num].usb_product == 0x53f3) {
++    dev->scanner_type = AV_SHEETFEED;
++    dev->sane.type = "sheetfed scanner";
++    dev->inquiry_adf = 1;
++    dev->inquiry_duplex = 1;
++    dev->inquiry_duplex_interlaced = 1;
++    dev->inquiry_detect_accessories = 0;
++    dev->inquiry_tune_scan_length = 0;
++    DBG (1, "attach: HP PS200 quirks applied\n");
++  }
 +
-+    { "HP", "HP PS200",
-+      0x03f0, 0x53f3,
-+      "Hewlett-Packard", "HP PS200 Sheet-fed Scanner",
-+      AV_INT_BUTTON | AV_ACCEL_TABLE,
-+      { 0, {0, 0}, {{0, 0}, {0, 0}} }
-+    },
-+    /* comment="HP PS200 portable sheet-fed scanner (Avision OEM)" */
-+    /* status="basic" */
+   /* We need a bigger buffer for USB devices, since they seem to have
+      a firmware bug and do not support reading the calibration data in
+      tiny chunks */
+@@ -8244,6 +8261,11 @@
+       status = release_unit (s, 0);
+       if (status != SANE_STATUS_GOOD)
+ 	DBG (1, "reader_process: release_unit failed\n");
 +
-     { "Minolta", "#2882",
-       0, 0,
-       "Minolta", "Dimage Scan Dual I",
++      /* HP PS200: send end-job to fully eject paper */
++      if (dev->hw->usb_vendor == 0x03f0 && dev->hw->usb_product == 0x53f3) {
++	release_unit (s, 2);
++      }
+     }
+ 
+   if ((dev->hw->feature_type & AV_ADF_FLIPPING_DUPLEX) && s->source_mode == AV_ADF_DUPLEX && s->page % 2) {

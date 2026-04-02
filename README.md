@@ -4,6 +4,14 @@ Linux driver for the **HP PS200 Sheet-fed Scanner** (USB ID `03f0:53f3`).
 
 This scanner is an Avision OEM device that HP never added to the SANE/HPLIP whitelist. This patch adds it to the `sane-backends` avision backend so it works with any SANE-compatible scanning application on Linux.
 
+## Features
+
+- Color, Grayscale, and Black & White scanning
+- Resolution from 50 to 600 DPI
+- ADF Front, ADF Back, and **Duplex** scanning
+- Proper paper eject after scan
+- Works with simple-scan, GIMP, and any SANE-compatible app
+
 ## Supported Device
 
 | Model | USB Vendor | USB Product | Protocol |
@@ -54,9 +62,21 @@ scanimage -L
 
 ## How It Works
 
-The HP PS200 is manufactured by Avision and rebranded by HP. It uses the standard Avision SCSI-over-USB protocol, but HP never submitted the device ID to the SANE project for inclusion in the avision backend whitelist.
+The HP PS200 is manufactured by Avision and rebranded by HP. It uses the standard Avision SCSI-over-USB protocol, but HP never submitted the device ID to the SANE project.
 
-This patch simply adds the device entry (`03f0:53f3`) to the `Avision_Device_List` array in `backend/avision.c`, allowing the existing avision driver to recognize and communicate with the scanner.
+This patch:
+1. Adds the device entry (`03f0:53f3`) to the `Avision_Device_List` array
+2. Forces sheetfeed/ADF/duplex mode (scanner misreports its type in SCSI inquiry)
+3. Sets linear gamma (scanner handles gamma internally)
+4. Reduces TEST_UNIT_READY timeout (scanner doesn't fully implement this command)
+5. Adds proper paper eject on scan completion
+
+## Scanning Tips
+
+- **Best quality**: Use 300 DPI Color mode
+- **Duplex**: Select "ADF Duplex" as source to scan both sides in one pass
+- **Paper orientation**: Feed pages face-down for front-side scanning
+- **Batch scanning**: Stack multiple pages in the feeder for continuous scanning
 
 ## Tested On
 
