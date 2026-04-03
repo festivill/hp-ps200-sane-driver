@@ -1,5 +1,5 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-+++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:37:27.712857759 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:38:29.363939925 -0300
 @@ -900,7 +900,7 @@
      { "HP", "HP PS200",
        0x03f0, 0x53f3,
@@ -63,13 +63,3 @@
      }
  
    if ((dev->hw->feature_type & AV_ADF_FLIPPING_DUPLEX) && s->source_mode == AV_ADF_DUPLEX && s->page % 2) {
-@@ -8627,6 +8649,9 @@
-     double gamma = 2.22;
-     if (s->hw->hw->feature_type & AV_GAMMA_10)
-       gamma = 1.0;
-+    /* HP PS200: intermediate gamma for cleaner whites */
-+    if (s->hw->hw->usb_vendor == 0x03f0 && s->hw->hw->usb_product == 0x53f3)
-+      gamma = 2.22;
-     const double one_over_gamma = 1. / gamma;
- 
-     for (i = 0; i < 4; ++ i)
