@@ -1,5 +1,5 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-+++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-03 00:01:05.193303305 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-03 00:03:00.031159954 -0300
 @@ -900,7 +900,7 @@
      { "HP", "HP PS200",
        0x03f0, 0x53f3,
@@ -81,19 +81,31 @@
      add_source_mode (dev, AV_ADF_DUPLEX, "ADF Duplex");
    }
  
-@@ -8244,6 +8271,11 @@
+@@ -6932,6 +6959,11 @@
+   if (status != SANE_STATUS_GOOD)
+     DBG (1, "do_cancel: release_unit failed\n");
+ 
++  /* HP PS200: end-job to fully eject last page */
++  if (s->hw->hw->usb_vendor == 0x03f0 && s->hw->hw->usb_product == 0x53f3) {
++    release_unit (s, 2);
++  }
++
+   return SANE_STATUS_CANCELLED;
+ }
+ 
+@@ -8244,6 +8276,11 @@
        status = release_unit (s, 0);
        if (status != SANE_STATUS_GOOD)
  	DBG (1, "reader_process: release_unit failed\n");
 +
-+      /* HP PS200: send end-job to fully eject paper */
++      /* HP PS200: explicitly eject paper after each page */
 +      if (dev->hw->usb_vendor == 0x03f0 && dev->hw->usb_product == 0x53f3) {
-+	release_unit (s, 2);
++	release_unit (s, 1);
 +      }
      }
  
    if ((dev->hw->feature_type & AV_ADF_FLIPPING_DUPLEX) && s->source_mode == AV_ADF_DUPLEX && s->page % 2) {
-@@ -9191,8 +9223,9 @@
+@@ -9191,8 +9228,9 @@
      }
  #endif
  
@@ -105,7 +117,7 @@
      DBG (1, "sane_start: optimized calibration away.\n");
      goto calib_end;
    }
-@@ -9249,7 +9282,7 @@
+@@ -9249,7 +9287,7 @@
   calib_end:
  
    if (dev->inquiry_3x3_matrix && dev->inquiry_asic_type >= AV_ASIC_C6 &&
