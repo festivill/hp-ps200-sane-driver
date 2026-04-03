@@ -1,5 +1,5 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-+++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:47:12.900306754 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:52:08.786410652 -0300
 @@ -900,7 +900,7 @@
      { "HP", "HP PS200",
        0x03f0, 0x53f3,
@@ -64,3 +64,12 @@
      }
  
    if ((dev->hw->feature_type & AV_ADF_FLIPPING_DUPLEX) && s->source_mode == AV_ADF_DUPLEX && s->page % 2) {
+@@ -9249,7 +9272,7 @@
+  calib_end:
+ 
+   if (dev->inquiry_3x3_matrix && dev->inquiry_asic_type >= AV_ASIC_C6 &&
+-      s->page == 0)
++      (s->page == 0 || !dev->inquiry_keeps_gamma))
+   {
+     status = send_3x3_matrix (s);
+     if (status != SANE_STATUS_GOOD) {
