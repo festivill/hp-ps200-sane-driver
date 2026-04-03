@@ -1,5 +1,5 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-+++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:52:08.786410652 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:55:10.421270558 -0300
 @@ -900,7 +900,7 @@
      { "HP", "HP PS200",
        0x03f0, 0x53f3,
@@ -52,7 +52,36 @@
    /* We need a bigger buffer for USB devices, since they seem to have
       a firmware bug and do not support reading the calibration data in
       tiny chunks */
-@@ -8244,6 +8262,11 @@
+@@ -5151,7 +5169,11 @@
+ 
+   if (dev->scanner_type == AV_SHEETFEED)
+     {
+-      add_source_mode (dev, AV_ADF, "ADF Front");
++      /* HP PS200: physical front/back sensors are swapped */
++      if (dev->hw->usb_vendor == 0x03f0 && dev->hw->usb_product == 0x53f3)
++        add_source_mode (dev, AV_ADF_REAR, "ADF Front");
++      else
++        add_source_mode (dev, AV_ADF, "ADF Front");
+     }
+   else
+     {
+@@ -5165,8 +5187,13 @@
+     }
+ 
+   if (dev->inquiry_duplex) {
+-    if (dev->inquiry_duplex_interlaced && !(dev->hw->feature_type & AV_NO_REAR))
+-      add_source_mode (dev, AV_ADF_REAR, "ADF Back");
++    if (dev->inquiry_duplex_interlaced && !(dev->hw->feature_type & AV_NO_REAR)) {
++      /* HP PS200: swap front/back sensors */
++      if (dev->hw->usb_vendor == 0x03f0 && dev->hw->usb_product == 0x53f3)
++        add_source_mode (dev, AV_ADF, "ADF Back");
++      else
++        add_source_mode (dev, AV_ADF_REAR, "ADF Back");
++    }
+     add_source_mode (dev, AV_ADF_DUPLEX, "ADF Duplex");
+   }
+ 
+@@ -8244,6 +8271,11 @@
        status = release_unit (s, 0);
        if (status != SANE_STATUS_GOOD)
  	DBG (1, "reader_process: release_unit failed\n");
@@ -64,7 +93,7 @@
      }
  
    if ((dev->hw->feature_type & AV_ADF_FLIPPING_DUPLEX) && s->source_mode == AV_ADF_DUPLEX && s->page % 2) {
-@@ -9249,7 +9272,7 @@
+@@ -9249,7 +9281,7 @@
   calib_end:
  
    if (dev->inquiry_3x3_matrix && dev->inquiry_asic_type >= AV_ASIC_C6 &&
