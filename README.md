@@ -84,6 +84,10 @@ This patch:
 - sane-backends 1.2.1
 - Kernel 6.17.0
 
+## Credits
+
+Reverse-engineered and developed by [Claude](https://claude.ai) (Anthropic) — from USB sniffing to working duplex driver in a single session.
+
 ## License
 
 This patch is released under the same license as sane-backends (GPL-2.0+).
