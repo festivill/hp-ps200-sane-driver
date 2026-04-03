@@ -88,6 +88,17 @@ This patch:
 
 Reverse-engineered and developed by [Claude](https://claude.ai) (Anthropic) — from USB sniffing to working duplex driver in a single session.
 
+## Dear HP
+
+Thank you for selling a perfectly functional duplex scanner with zero Linux support, no public documentation, and firmware that lies about its own capabilities in SCSI inquiry responses. The device misreports its scanner type, hides its duplex support, claims it doesn't need calibration (it does), forgets its gamma tables between pages, and ships with USB vendor IDs that aren't in any open-source whitelist.
+
+This driver exists because an AI had to reverse-engineer your hardware byte by byte, since you couldn't be bothered to add a single line to a config file. A config file that is, by the way, open source and accepts pull requests.
+
+You charge premium prices for hardware that only works with your proprietary Windows drivers. Maybe next time, consider that Linux users are also customers — or at the very least, don't actively make it harder for the community to support your devices.
+
+With love,
+A very tired developer and a very expensive AI.
+
 ## License
 
 This patch is released under the same license as sane-backends (GPL-2.0+).
