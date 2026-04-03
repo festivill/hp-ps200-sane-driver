@@ -1,5 +1,5 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-+++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:38:29.363939925 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:47:12.900306754 -0300
 @@ -900,7 +900,7 @@
      { "HP", "HP PS200",
        0x03f0, 0x53f3,
@@ -31,7 +31,7 @@
        sleep ((unsigned int) delay);
  
        switch (status)
-@@ -4892,6 +4896,19 @@
+@@ -4892,6 +4896,20 @@
        } /* end for all modes */
    }
  
@@ -45,13 +45,14 @@
 +    dev->inquiry_duplex_interlaced = 1;
 +    dev->inquiry_detect_accessories = 0;
 +    dev->inquiry_tune_scan_length = 0;
++    dev->inquiry_keeps_gamma = 0;
 +    DBG (1, "attach: HP PS200 quirks applied\n");
 +  }
 +
    /* We need a bigger buffer for USB devices, since they seem to have
       a firmware bug and do not support reading the calibration data in
       tiny chunks */
-@@ -8244,6 +8261,11 @@
+@@ -8244,6 +8262,11 @@
        status = release_unit (s, 0);
        if (status != SANE_STATUS_GOOD)
  	DBG (1, "reader_process: release_unit failed\n");
