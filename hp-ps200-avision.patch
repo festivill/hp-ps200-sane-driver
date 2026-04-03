@@ -1,5 +1,5 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
-+++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-02 23:55:10.421270558 -0300
++++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-03 00:01:05.193303305 -0300
 @@ -900,7 +900,7 @@
      { "HP", "HP PS200",
        0x03f0, 0x53f3,
@@ -93,7 +93,19 @@
      }
  
    if ((dev->hw->feature_type & AV_ADF_FLIPPING_DUPLEX) && s->source_mode == AV_ADF_DUPLEX && s->page % 2) {
-@@ -9249,7 +9281,7 @@
+@@ -9191,8 +9223,9 @@
+     }
+ #endif
+ 
+-  /* no calibration for ADF pages */
+-  if (s->page > 0) {
++  /* no calibration for ADF pages - except HP PS200 which needs it every page */
++  if (s->page > 0 &&
++      !(dev->hw->usb_vendor == 0x03f0 && dev->hw->usb_product == 0x53f3)) {
+     DBG (1, "sane_start: optimized calibration away.\n");
+     goto calib_end;
+   }
+@@ -9249,7 +9282,7 @@
   calib_end:
  
    if (dev->inquiry_3x3_matrix && dev->inquiry_asic_type >= AV_ASIC_C6 &&
