@@ -66,6 +66,13 @@ def scan(source, label):
     except Exception as e:
         print(f"  Error: {e}", flush=True)
 
+    # Small dummy scan to trigger the driver's eject mechanism
+    time.sleep(1)
+    subprocess.run(["scanimage", "--format=pnm", "--resolution", "50",
+                    "--mode", "Lineart", "-x", "10", "-y", "1",
+                    "-o", "/dev/null"], timeout=15, capture_output=True)
+    time.sleep(1)
+
 def main():
     print("Listening...", flush=True)
     scanning = False
@@ -78,8 +85,11 @@ def main():
                 scanning = True
                 now = datetime.now().strftime('%H:%M:%S')
                 print(f"\n[{now}] Button 1: SIMPLEX", flush=True)
-                time.sleep(1)  # let USB settle
+                time.sleep(1)
                 scan("ADF Front", "simplex 300dpi color")
+                # Flush stale button events
+                for _ in range(10):
+                    poll_button()
                 scanning = False
                 print("Listening...", flush=True)
 
@@ -89,6 +99,9 @@ def main():
                 print(f"\n[{now}] Button 2: DUPLEX", flush=True)
                 time.sleep(1)
                 scan("ADF Duplex", "duplex 300dpi color")
+                # Flush stale button events
+                for _ in range(10):
+                    poll_button()
                 scanning = False
                 print("Listening...", flush=True)
 
