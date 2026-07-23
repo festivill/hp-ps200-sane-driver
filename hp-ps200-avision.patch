@@ -1,14 +1,20 @@
 --- /tmp/sane-backends-1.2.1/backend/avision.c	2026-04-01 07:02:31.090835669 -0300
 +++ /tmp/sane-clean/sane-backends-1.2.1/backend/avision.c	2026-04-03 00:03:00.031159954 -0300
-@@ -900,7 +900,7 @@
-     { "HP", "HP PS200",
-       0x03f0, 0x53f3,
-       "Hewlett-Packard", "HP PS200 Sheet-fed Scanner",
--      AV_INT_BUTTON | AV_ACCEL_TABLE,
+@@ -160,5 +160,14 @@
+ static Avision_HWEntry Avision_Device_List [] =
+   {
++    { "HP", "HP PS200",
++      0x03f0, 0x53f3,
++      "Hewlett-Packard", "HP PS200 Sheet-fed Scanner",
 +      AV_INT_BUTTON,
-       { 0, {0, 0}, {{0, 0}, {0, 0}} }
-     },
-     /* comment="HP PS200 portable sheet-fed scanner (Avision OEM)" */
++      { 0, {0, 0}, {{0, 0}, {0, 0}} }
++    },
++    /* comment="HP PS200 portable sheet-fed scanner (Avision OEM)" */
++    /* status="good" */
++
+     { NULL, NULL,
+       0x0638, 0x2E59,
+       "Avision", "AD345F",
 @@ -2547,8 +2547,8 @@
  	status_timeout = 1000;
          break;

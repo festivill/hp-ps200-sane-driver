@@ -7,6 +7,9 @@ set -e
 echo "=== HP PS200 SANE Driver Installer ==="
 echo ""
 
+# Resolve script directory up-front, before any cd changes the working dir
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root: sudo ./install.sh"
@@ -39,8 +42,7 @@ cd sane-backends-*/
 
 # Apply patch
 echo "[3/7] Applying HP PS200 patch..."
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-patch -p0 < "$SCRIPT_DIR/hp-ps200-avision.patch"
+patch -p3 < "$SCRIPT_DIR/hp-ps200-avision.patch"
 
 # Build
 echo "[4/7] Building (this may take a minute)..."
